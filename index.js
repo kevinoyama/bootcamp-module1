@@ -4,7 +4,7 @@ const server = express();
 
 server.use(express.json());
 
-const projectList = [{id: 1, title: 'kevin', tasks:[]}, {id: 2, title: 'jose', tasks:[]}];
+const projectList = [];
 
 var countOfReq = 0;
 
