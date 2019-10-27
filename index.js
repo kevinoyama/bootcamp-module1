@@ -6,6 +6,31 @@ server.use(express.json());
 
 const projectList = [{id: 1, title: 'kevin', tasks:[]}, {id: 2, title: 'jose', tasks:[]}];
 
+var countOfReq = 0;
+
+function checkId (req, res, next){
+
+    const { id } = req.params;
+
+    const index = projectList.findIndex(proj => {
+        return proj.id == id;
+    });
+
+    if(index == -1){
+        return res.status(400).json({ error: 'Project Id not found'});
+    }
+
+    return next();
+}
+
+function logReq (req, res, next){
+    countOfReq ++;
+    console.log(`Number of requests received: ${countOfReq}`);
+    return next();
+}
+
+server.use(logReq);
+
 server.post('/projects', (req, res) => {
     const {id, title} = req.body;
 
@@ -24,7 +49,7 @@ server.get('/projects', (req, res) => {
     res.json(projectList);
 });
 
-server.put('/projects/:id', (req, res) => {
+server.put('/projects/:id', checkId, (req, res) => {
     const {id} = req.params;
     const {title} = req.body;
 
@@ -39,7 +64,7 @@ server.put('/projects/:id', (req, res) => {
     res.json(project);
 });
 
-server.delete('/projects/:id', (req, res) => {
+server.delete('/projects/:id', checkId, (req, res) => {
     const {id} = req.params;
 
     const index = projectList.findIndex(proj => {
@@ -51,7 +76,7 @@ server.delete('/projects/:id', (req, res) => {
     res.json(deleted);
 });
 
-server.put('/projects/:id/tasks', (req, res) => {
+server.put('/projects/:id/tasks', checkId,  (req, res) => {
     const { id } = req.params;
     const { title } = req.body;
 
@@ -68,7 +93,3 @@ server.put('/projects/:id/tasks', (req, res) => {
 });
 
 server.listen(3000);
-
-function checkId (req, res, next){
-    
-}
